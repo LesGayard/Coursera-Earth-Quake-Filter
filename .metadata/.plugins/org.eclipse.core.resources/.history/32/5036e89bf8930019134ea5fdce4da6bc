@@ -1,0 +1,110 @@
+import java.util.*;
+import edu.duke.*;
+
+public class EarthQuakeClient2 {
+    public EarthQuakeClient2() {
+        // TODO Auto-generated constructor stub
+    }
+
+    public ArrayList<QuakeEntry> filter(ArrayList<QuakeEntry> quakeData, Filter f) { 
+        ArrayList<QuakeEntry> answer = new ArrayList<QuakeEntry>();
+        for(QuakeEntry qe : quakeData) { 
+            if (f.satisfies(qe)) { 
+                answer.add(qe); 
+            } 
+        } 
+        
+        return answer;
+    } 
+    
+    //Modify the code in the quakesWithFilter method in the EarthQuakeClient2 class to filter earthquakes using two criteria,
+    //those with magnitude between 4.0 and 5.0 and depth between -35000.0 and -12000.0.
+    public void quakesWithFilter() { 
+        EarthQuakeParser parser = new EarthQuakeParser(); 
+        //String source = "http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.atom";
+        //String source = "data/nov20quakedatasmall.atom";
+        String source = "data/nov20quakedatasmall.atom";
+        ArrayList<QuakeEntry> list  = parser.read(source);         
+        System.out.println("read data for "+list.size()+" quakes");
+
+        Filter f = new MinMagFilter(4.0); 
+        ArrayList<QuakeEntry> m7  = filter(list, f); 
+        for (QuakeEntry qe: m7) { 
+            System.out.println(qe);
+        }
+        
+        Filter f1 = new MagnitudeFilter(4.0, 5.0);
+        ArrayList<QuakeEntry> test = filter(list, f1);
+        for(QuakeEntry qe : test){
+            //System.out.println("magnitude filter : " + qe);
+        }
+        
+        f1 = new DepthFilter(-35000.0, -12000.0 );
+        test = filter(list, f1);
+        for(QuakeEntry qe : test){
+           // System.out.println("depth filter: " + qe);
+        }
+        
+        // to filter earthquakes using two criteria, those that are 10,000,000 meters (10,000 km) from Tokyo,
+        //Japan whose location is (35.42, 139.43), and that are in Japan 
+        //(this means "Japan" should be the last word in the title).
+        Location city = new Location (35.42, 139.43);
+        Filter f2 = new DistanceFilter(city, 10000000);
+        ArrayList<QuakeEntry> test1 = filter(list, f2);
+        f2 = new PhraseFilter("Japan", "end");
+        test1 = filter(list, f2);
+        for(QuakeEntry qe : test1){
+            System.out.println("filtered by distance and phrase" + qe);
+        }
+    }
+    
+    public void testAllMatchFilters(){
+        EarthQuakeParser parser = new EarthQuakeParser(); 
+        //String source = "http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.atom";
+        //String source = "data/nov20quakedatasmall.atom";
+        String source = "data/nov20quakedatasmall.atom";
+        ArrayList<QuakeEntry> list  = parser.read(source);         
+        System.out.println("read data for "+list.size()+" quakes");
+    
+        // Then create a MatchAllFilter named maf 
+        MatchAllFilter maf = new MatchAllFilter();
+    
+        Filter magnitude = new MagnitudeFilter(0.0, 2.0);
+        Filter depth = new DepthFilter( -100000.0 , -10000.0);
+        Filter phrase = new PhraseFilter("California", "end");
+    
+        maf.addFilter(magnitude);
+        maf.addFilter(depth);
+        maf.addFilter(phrase);
+        
+        int size = maf.getSize();
+        System.out.println("number of filters used: " + size );
+        for(QuakeEntry qe : list){
+            boolean test = maf.satisfies(qe);
+            if(test == true){
+                System.out.println(qe);
+            }
+        }
+    }
+    public void createCSV() {
+        EarthQuakeParser parser = new EarthQuakeParser();
+        //String source = "../data/nov20quakedata.atom";
+        String source = "data/nov20quakedatasmall.atom";
+        //String source = "http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.atom";
+        ArrayList<QuakeEntry> list  = parser.read(source);
+        dumpCSV(list);
+        System.out.println("# quakes read: "+list.size());
+    }
+
+    public void dumpCSV(ArrayList<QuakeEntry> list) {
+        System.out.println("Latitude,Longitude,Magnitude,Info");
+        for(QuakeEntry qe : list){
+            System.out.printf("%4.2f,%4.2f,%4.2f,%s\n",
+                qe.getLocation().getLatitude(),
+                qe.getLocation().getLongitude(),
+                qe.getMagnitude(),
+                qe.getInfo());
+        }
+    }
+
+}

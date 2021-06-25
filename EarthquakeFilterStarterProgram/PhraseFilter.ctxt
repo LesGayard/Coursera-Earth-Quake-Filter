@@ -1,0 +1,10 @@
+#BlueJ class context
+comment0.target=PhraseFilter
+comment0.text=\r\n\ D\u00E9crivez\ votre\ classe\ PhraseFilter\ ici.\r\n\r\n\ @author\ (Leslie\ Gayard)\r\n\ @version\ (Le\ 21\ juin\ 2019)\r\n
+comment1.params=oneRequest\ onePhrase
+comment1.target=PhraseFilter(java.lang.String,\ java.lang.String)
+comment2.params=qe
+comment2.target=boolean\ satisfies(QuakeEntry)
+comment3.params=
+comment3.target=java.lang.String\ getName()
+numComments=4

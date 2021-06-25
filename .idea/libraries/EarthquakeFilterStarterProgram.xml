@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="EarthquakeFilterStarterProgram">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/EarthquakeFilterStarterProgram.zip!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
